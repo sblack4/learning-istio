@@ -12,3 +12,4 @@ az aks get-credentials \
 
 echo 'installling istio'
 istioctl install -f demo-profile.yml --context EUS1DEVISTIOAKS
+kubectl label namespace default istio-injection=enabled
