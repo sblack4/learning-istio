@@ -10,6 +10,8 @@ az aks get-credentials \
     --name  EUS1DEVISTIOAKS \
     --resource-group EUS1-DEV-ISTIO-RG
 
+./00-install-istio/get-context.sh
+
 echo 'installling istio'
-istioctl install -f demo-profile.yml --context EUS1DEVISTIOAKS
+istioctl install -f ./00-install-istio/demo-profile.yaml --context EUS1DEVISTIOAKS
 kubectl label namespace default istio-injection=enabled
