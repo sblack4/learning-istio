@@ -103,3 +103,40 @@ echo 'install httpbin sample app?'; read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
 kubectl apply -f samples/httpbin/httpbin.yaml
 fi
+
+echo 'lock everything down with mtls?'; read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+for f in mtls-global.yaml; do
+code $f
+kubectl apply -f $f
+done
+fi
+
+echo 'demonstrate circuit breaking'; read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+for f in circuit-breaking-01.yaml; do
+code $f
+kubectl apply -f $f
+done
+
+echo 'deploying our load testing tool, fortio'
+kubectl apply -f samples/httpbin/sample-client/fortio-deploy.yaml
+export FORTIO_POD=$(kubectl get pods -lapp=fortio -o 'jsonpath={.items[0].metadata.name}')
+kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio curl -quiet http://httpbin:8000/get
+
+echo 'load?'
+read
+kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio load -c 2 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get
+
+echo 'more load?'
+read
+kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio load -c 3 -qps 0 -n 30 -loglevel Warning http://httpbin:8000/get
+
+echo 'MORE LOAD, MR KRABS???'
+read
+kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio load -c 5 -qps 0 -n 50 -loglevel Warning http://httpbin:8000/get
+
+echo 'lets see the stats'
+kubectl exec "$FORTIO_POD" -c istio-proxy -- pilot-agent request GET stats | grep httpbin | grep pending
+
+fi
