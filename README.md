@@ -31,8 +31,7 @@ kubectl label namespace default istio-injection=enabled
 #### TLDR
 
 This is made easy by the `istioctl` tool. Just run the scripts to install istio and download the sample applications locally.
-
-> :memo: Istio automatic sidecar injection is only automatic if you label your namespace
+- 📝 Istio automatic sidecar injection is only automatic if you label your namespace
 
 ### 01 Install the bookinfo sample app
 
@@ -46,6 +45,5 @@ which is like a normal kubernetes service but with more service-mesh
 [synergy](https://www.statista.com/chart/24102/share-who-hate-business-phrases/).
 
 #### TLDR
-> :memo: Istio Gateway: Like a k8s ingress that also does egress. Essentially a proxy.
-
-> :memo: Istio VirtualService: Like a k8s service but with more rules. These map requests to destinations via routing rules.
+- 📝 Istio Gateway: Like a k8s ingress that also does egress. Essentially a proxy.
+- 📝 Istio VirtualService: Like a k8s service but with more rules. These map requests to destinations via routing rules.
