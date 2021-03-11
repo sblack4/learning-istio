@@ -1,0 +1,19 @@
+
+istio-1.9.0
+samples/*
+# !samples/bookinfo
+# !samples/httpbin
+# !samples/addons
+cert.yaml
+
+!samples/bookinfo/networking/bookinfo-gateway.yaml
+!samples/bookinfo/networking/destination-rule-all.yaml
+!samples/addons/grafana.yaml
+!samples/addons/jaeger.yaml
+!samples/addons/kiali.yaml
+!samples/addons/prometheus.yaml
+!samples/bookinfo/networking/destination-rule-all.yaml
+!samples/bookinfo/networking/virtual-service-all-v1.yaml
+
+!samples/httpbin/httpbin.yaml
+!samples/httpbin/sample-client/fortio-deploy.yaml
