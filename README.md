@@ -66,7 +66,20 @@ kubectl apply -f samples/addons/grafana.yaml
 kubectl apply -f samples/addons/jaeger.yaml
 kubectl apply -f samples/addons/kiali.yaml
 kubectl apply -f samples/addons/prometheus.yaml
+kubectl apply -f samples/addons/extras/zipkin.yaml
 ```
+
+#### Addons TLDR
+Istio works well with these applications.
+
+- [Grafana](https://grafana.com/) for observability dashboards
+- [Jaeger](https://www.jaegertracing.io/) for distributed tracing
+- [Kiali](https://kiali.io/) as an Istio management console
+- [Prometheus](https://en.wikipedia.org/wiki/Prometheus) for his liver
+- [Zipkin](https://zipkin.io/) for more distributes tracing
+
+
+### 02.1 Kiali
 
 Generate some traffic:
 ```sh
@@ -79,15 +92,54 @@ Get the [Kiali dashboard](https://kiali.io/documentation/latest/features/):
 ```sh
 istioctl dashboard kiali
 ```
+### 02.2 Grafana
 
-#### Addons TLDR
-Istio works well with these applications.
+### 02.3 jaeger
 
-- [Grafana](https://grafana.com/) for observability dashboards
-- [Jaeger](https://www.jaegertracing.io/) for distributed tracing
-- [Kiali](https://kiali.io/) as an Istio management console
-- [Prometheus](https://en.wikipedia.org/wiki/Prometheus) for his liver
+### 02.4 zipkin
+???
 
 
+### 03 request timeouts
 
-### 02 Kiali
+https://istio.io/latest/docs/tasks/traffic-management/request-timeouts/
+
+Prerequisite: create the virtual services:
+
+```
+kubectl delete -f samples/bookinfo/networking/virtual-service-all-v1.yaml
+```
+Create and configure virtual services with a fixed delay (this is fault injection!  ). The page will take two seconds to load (this is two long).
+
+
+```
+k apply -f request-timeouts-01.yaml  
+```
+Add a timeout. The page should now display an error message. 
+
+
+```
+k apply -f request-timeouts-02.yaml
+```
+ 
+#### TLDR
+[VirtualServices]() allow for:
+- Fault Injection in their HTTP definition
+- Timeout rules in routes
+
+### EXTRA Internal Ingress
+
+Add the below to the `spec.components.ingressGateways` ingress gateway definition that you want to make internal. The 
+[KubernetesResourcesSpec](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#KubernetesResourcesSpec)
+ also has fields for specifying the IP. 
+
+```yaml
+        serviceAnnotations:
+          "beta.kubernetes.io/os": linux
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+```
+
+#### TLDR Internal ingress
+- Read the [KubernetesResourcesSpec](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/#KubernetesResourcesSpec) docs
+
+### EXTRA SSL
