@@ -30,6 +30,7 @@ kubens default
 echo 'install istio?'
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
+code ./demo-profile.yaml
 istioctl install -f ./demo-profile.yaml --context EUS1DEVISTIOAKS
 kubectl label namespace default istio-injection=enabled
 fi
@@ -45,9 +46,11 @@ fi
 
 echo 'intsall bookinfo?'; read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
-kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml
-kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
+for f in samples/bookinfo/platform/kube/bookinfo.yaml samples/bookinfo/networking/bookinfo-gateway.yaml samples/bookinfo/networking/destination-rule-all.yaml; do
+echo $f
+code $f
+kubectl apply -f $f
+done
 fi
 
 echo 'ready to install addons?'; read answer
@@ -89,10 +92,14 @@ generate_traffic
 read
 kubectl apply -f samples/bookinfo/networking/destination-rule-all.yaml
 kubectl apply -f samples/bookinfo/networking/virtual-service-all-v1.yaml
-echo "check kiali again!"
+echo "check kiali again! then check the $ingress_ip/productpage"
 generate_traffic
 read
 kubectl apply -f samples/bookinfo/networking/virtual-service-reviews-test-v2.yaml
-generate_traffic
-echo "now log into $ingress_ip/productpage as jason"
+echo "now log into http://$ingress_ip/productpage as jason"
+fi
+
+echo 'install httpbin sample app?'; read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+kubectl apply -f samples/httpbin/httpbin.yaml
 fi
